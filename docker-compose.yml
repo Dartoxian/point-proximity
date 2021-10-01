@@ -1,0 +1,25 @@
+
+version: '3.2'
+services:
+  db:
+    build:
+      dockerfile: db-backend.dockerfile
+      context: ./
+    environment:
+      - POSTGRES_PASSWORD=postgrespwd
+    volumes:
+      # The database can be wiped with sudo -i sh -c 'rm -rf /var/lib/docker/volumes/point-proximity_pgdata/_data/*'
+      - "pgdata:/var/lib/postgresql/data"
+      - "./data:/point-proximity/data"
+    ports:
+      - '5432:5432'
+  gdal:
+    image: osgeo/gdal:latest
+    working_dir: /point-proximity
+    environment:
+      - PG_PASSWORD=devpwd
+    volumes:
+      - "./data:/point-proximity/data"
+      - "./scripts:/point-proximity/scripts:ro"
+volumes:
+  pgdata:
