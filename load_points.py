@@ -12,7 +12,9 @@ if __name__ == "__main__":
 
     with conn.cursor() as cur:
         cur.execute("DROP TABLE IF EXISTS points;")
-        cur.execute("CREATE TABLE points(respondent_id text PRIMARY KEY, address text, location geometry);")
+        cur.execute("CREATE TABLE points(respondent_id text PRIMARY KEY, address text);")
+        cur.execute("SELECT AddGeometryColumn ('public', 'points', 'location', 4326, 'POINT',2);")
+        cur.execute("CREATE INDEX ON points USING GIST(location);")
 
         # Load data
         for point in points:
