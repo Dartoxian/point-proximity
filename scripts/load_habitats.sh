@@ -7,28 +7,25 @@ cd `dirname $0`
 echo "Loading habitats"
 
 ogr2ogr -f "PostgreSQL" "PG:host=db user=point_proximity dbname=point_proximity password=devpwd" \
-  '/point-proximity/data/woodland.gpkg' \
+  '/point-proximity/data/lcm-2017-vec_4164463/lcm-2017-vec_4164463.gpkg' \
   -lco PRECISION=no \
   -nln habitats -overwrite \
-  -sql "SELECT *, 'woodland' AS type FROM woodland"
-echo "Loaded woodland..."
+  -sql "SELECT *,
+       CASE _mode
+        WHEN 1 THEN 'woodland'
+        WHEN 2 THEN 'woodland'
+        WHEN 3 THEN 'arable'
+        WHEN 4 THEN 'grassland'
+        WHEN 5 THEN 'grassland'
+        WHEN 6 THEN 'grassland'
+        WHEN 7 THEN 'grassland'
+        WHEN 10 THEN 'grassland'
+        WHEN 20 THEN 'urban'
+        WHEN 21 THEN 'urban'
+        ELSE 'other'
+       END AS type
+      FROM lcm_2017"
+echo "Loaded habitats..."
 
-ogr2ogr -f "PostgreSQL" "PG:host=db user=point_proximity dbname=point_proximity password=devpwd" \
-  '/point-proximity/data/arable.gpkg' \
-  -nln habitats -append \
-  -sql "SELECT *, 'arable' AS type FROM arable"
-echo "Loaded arable..."
-
-ogr2ogr -f "PostgreSQL" "PG:host=db user=point_proximity dbname=point_proximity password=devpwd" \
-  '/point-proximity/data/urban suburban.gpkg' \
-  -nln habitats -append \
-  -sql "SELECT *, 'urban/suburban' AS type FROM \"urban suburban\""
-echo "Loaded urban/suburban..."
-
-ogr2ogr -f "PostgreSQL" "PG:host=db user=point_proximity dbname=point_proximity password=devpwd" \
-  '/point-proximity/data/grassland.gpkg' \
-  -nln habitats -append \
-  -sql "SELECT *, 'grassland' AS type FROM grassland"
-echo "Loaded grassland..."
 
 echo "Done!"
